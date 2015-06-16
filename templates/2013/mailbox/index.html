@@ -1,0 +1,148 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="js"}%>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var $items = $('#vtab>ul>li');
+        $items.mouseover(function() {
+            $items.removeClass('selected');
+            $(this).addClass('selected');
+            var ind = $items.index($(this));
+            var dm = $('#vtab>ul>li:eq(' + ind + ')').html();
+            $('#add_mb').attr('href', '?c=mailbox&a=add&domain=' + dm);
+            $('#vtab>div').hide().eq(ind).show();
+        }).eq(1).mouseover();
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#search").click(function(){ //
+            if($('#name').val() == null || $('#name').val() == "") {
+                var data = {};
+            } else {
+                var data = {'name' : $("#name").val(),'type' : $("#type").val()};
+            }
+            $.post('<%{spUrl c=mailbox a=index}%>', data, function(backs){
+                $('html').html(backs);
+                $('#name').val(data.name);
+                $('#type').val(data.type);
+            });
+        });
+			
+			
+        //如果“完整删除用户数据”被选中，则在url上增加参数
+        $('#delall').click(function() {
+            if ($('#delall').attr('checked')) {
+                $('.delmx').each(function() {
+                    var uid = $(this).attr('id');
+                    var newhref = "?c=mailbox&a=rm&mid=" + uid + "&delall=1";
+                    $(this).attr("href" , newhref);
+                })
+                var cfd = $('#hidcfd').val();
+                alert(cfd);
+            } else {
+                $('.delmx').each(function() {
+                    var uid = $(this).attr('id');
+                    var newhref = "?c=mailbox&a=rm&mid=" + uid;
+                    $(this).attr("href" , newhref);
+                })
+            }
+        });
+			
+        //点击“选择”时，则在url上增加参数
+        $('#filter').click(function() {
+            var dm = $('#domain').val();
+            var lnk = $(this).attr("href");
+            var newlink = lnk + '&domain=' + dm
+            $(this).attr("href" , newlink);
+            window.location.href(newlink);
+        });
+    });
+</script>
+<%{/block}%>
+<%{block name="css"}%>
+<link type="text/css" rel="stylesheet" href="./public/css/vtab.css" />
+<%{/block}%>
+<%{block name="body"}%>
+<div id="vtab">
+    <ul style="height: 28px;">
+        <%{foreach $dms as $list}%>
+        <li><%{$list.domain}%></li>
+        <%{/foreach}%>
+        <div><a id="add_mb"><%{T w='addmailbox'}%></a></div>
+        <div><%{T w='totalmailbox'}%><%{$count}%><%{T w='P'}%></div>
+    </ul>
+    <span style="clear:both; height:1px; margin-top: -5px;">&nbsp;</span>
+    <%{foreach $rs as $list}%>
+    <div>
+        <form action="<%{spUrl c=mailbox a=index domain=$list.domain}%>" method="post" target="_self" class="mx">
+            <table width="980" border="0" align="center" cellpadding="5" cellspacing="0" class="mxlist">
+                <tr align="center">
+                    <th><%{T w='user'}%></th>
+                    <th><%{T w='truename'}%></th>
+                    <th><%{T w='quota'}%></th>
+                    <th><%{T w='expiredate'}%></th>
+                    <th><%{T w='active'}%></th>
+                    <th><%{T w='operate'}%></th>
+                </tr>
+                <%{foreach $list.result as $rs}%>
+                <tr align="center" style="height:30px;">
+                    <td><a href="<%{spUrl c=mailbox a=edit mid=<%{$rs.username}%>}%>"><%{$rs.username}%></a></td>
+                    <td><%{$rs.name}%></td>
+                    <td><%{$rs.quota|size}%></td>
+                    <td><%{$rs.expiredate}%></td>
+                    <td><%{if $rs.active eq 1}%><%{T w='living'}%><%{else}%><%{T w='death'}%><%{/if}%></td>
+                    <td style="text-align:center;"><a href="<%{spUrl c=mailbox a=edit mid=<%{$rs.username}%>}%>"><img src="./public/images/edit.png"></a> <a class="delmx" href="<%{spUrl c=mailbox a=edit mid=<%{$rs.username}%>}%>" id="<%{$rs.username}%>"><img src="./public/images/del.png"  onclick="return confirm('<%{T w='delornot'}%>');"></a></td>
+                </tr>
+                <%{foreachelse}%>
+                <tr>
+                    <td colspan="6" align="center" style="height:20px;"><%{T w='nodomains'}%></td>
+                </tr>
+                <%{/foreach}%>
+                <%{if $list.pager}%>
+                <tr>
+                    <td colspan="6">
+                        <%{T w='sum'}%><%{T w='user'}%><%{$list.pager.total_count}%><%{T w='P'}%>，<%{T w='sum'}%><%{$list.pager.total_page}%><%{T w='page'}%>（<%{T w='perpage'}%><%{$list.pager.page_size}%><%{T w='P'}%><%{T w='user'}%>）：
+                        <!--在当前页不是第一页的时候，显示前页和上一页-->
+                        <%{if $list.pager.current_page != $list.pager.first_page}%>
+                        <a href="<%{spUrl c=mailbox a=index page=$list.pager.first_page domain=$conditions.domain}%>"><%{T w='firstpage'}%></a> | 
+                        <a href="<%{spUrl c=mailbox a=index page=$list.pager.prev_page domain=$conditions.domain}%>"><%{T w='prevpage'}%></a> | 
+                        <%{/if}%>
+                        <!--开始循环页码，同时如果循环到当前页则不显示链接-->
+                        <%{foreach from=$list.pager.all_pages item=thepage}%>
+                        <%{if thepage != $list.pager.current_page}%>
+                        <a href="<%{spUrl c=mailbox a=index page=$thepage domain=$conditions.domain}%>"><%{$thepage}%></a>
+                        <%{else}%>
+                        <b><%{$thepage}%></b>
+                        <%{/if}%>
+                        <%{/foreach}%>
+                        <!--在当前页不是最后一页的时候，显示下一页和后页-->
+                        <%{if $list.pager.current_page != $list.pager.last_page}%>
+                        | 
+                        <a href="<%{spUrl c=mailbox a=index page=$list.pager.next_page domain=$conditions.domain}%>"><%{T w='nextpage'}%></a> | 
+                        <a href="<%{spUrl c=mailbox a=index page=$list.pager.last_page domain=$conditions.domain}%>"><%{T w='lastpage'}%></a>
+                        <%{/if}%>
+                    </td>
+                </tr>
+                <%{/if}%>
+
+                </div>
+                <tr>
+                    <td valign="middle"><input name="delall" type="checkbox" value="1" id="delall">     <%{T w='delall'}%>
+                        <input name="hidcfd" type="hidden" id="hidcfd" value="<%{T w='confirmdestory'}%>" /></td>
+                    <td colspan="4"></td>
+                    <td>
+                        <%{T w='search'}%><input name="name" type="text" id="name"> <select name="type" id="type">
+                            <option value="name"><%{T w='truename'}%></option>
+                            <option value="username"><%{T w='user'}%></option>
+                        </select> <input name="search" type="button" id="search" value="<%{T w='search'}%>">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <%{/foreach}%>
+
+</body>
+</html>
+<%{/block}%>

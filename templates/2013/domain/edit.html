@@ -1,0 +1,108 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="js"}%>
+<script language="javascript">
+    $(document).ready(function(){
+        var $items = $('#vtab>ul>li');
+        $items.mouseover(function() {
+            $items.removeClass('selected');
+            $(this).addClass('selected');
+            var ind = $items.index($(this));
+            var dm = $('#vtab>ul>li:eq(' + ind + ')').html();
+            $('#add_mb').attr('href', '?c=mailbox&a=add&domain=' + dm);
+            $('#vtab>div').hide().eq(ind).show();
+        }).eq(1).mouseover();
+    });
+    function SelectDate(form)
+    {
+        year = form.selectdate.value;
+        if(year == 0){
+            return false;
+        }
+        if(year == -1){
+            form.expire.value = '0000-00-00';
+            return false;
+        }
+        nowdate = form.nowdate.value;
+        form.expire.value =  parseInt(nowdate.substr(0,4))+ parseInt(year) + '-' +
+            nowdate.substr(5,2)+ '-' + nowdate.substr(8,2);
+        return true;
+    }
+</script>
+<%{/block}%>
+<%{block name="css"}%>
+<link type="text/css" rel="stylesheet" href="./public/css/vtab.css" />
+<%{/block}%>
+<%{block name="body"}%>
+<div style="margin:0 auto; width:980px; height:50px; line-height:50px;"><strong><%{T w='editdomain'}%></strong></div>
+<form action="<%{spUrl c=domain a=update did=<%{$detail.domain}%>}%>" method="post" name="set_domain">
+    <div id="vtab">
+        <ul>
+            <li colspan="2" class="formtitle"><%{T w='basicset'}%></li>
+            <li colspan="2"><%{T w='templateset'}%></li>
+        </ul>
+        <div>
+            <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setdomains">
+            <tr>
+                <td width="30%"><%{T w='domain'}%></td>
+                <td><input name="domain" type="text" value="<%{$detail.domain}%>" size="30"></td>
+            </tr>
+            <td><%{T w='description'}%></td><td><input type="text" name="description" size="50" value="<%{$detail.description}%>"></td>
+            </tr>
+            <tr>
+                <td><%{T w='maxusers'}%></td><td><input type="text" name="maxusers" value="<%{$detail.maxusers}%>"></td>
+            </tr>
+            <tr>
+                <td><%{T w='maxaliases'}%></td><td><input type="text" name="maxalias" value="<%{$detail.maxalias}%>"></td>
+            </tr>
+            <tr>
+                <td><%{T w='maxquota'}%>(MB)</td><td><input type="text" name="maxquota" value="<%{$detail.maxquota / 1024 / 1024}%>"></td>
+            </tr>
+            <tr>
+                <td><%{T w='transport'}%></td><td><input type="text" name="transport" value="<%{$detail.transport}%>"></td>
+            </tr>
+            <tr>
+                <td><%{T w='allowfreeregiser'}%></td><td><input name="cansignup" type="checkbox" value="<%{$detail.cansignup|default:0}%>" ></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td><td><input name="active" type="checkbox" value="<%{$detail.active}%>" <%{if $detail.active eq 1}%>checked="checked"<%{/if}%>><%{T w='active'}%></td>
+            </tr>
+            <tr>
+            <input type="hidden" name="nowdate" value="2012-12-30">
+            <td><%{T w='expiredate'}%></td><td><input type="text" size=15 name="expire" value="<%{$detail.expiredate}%>">
+                <select name="selectdate" onChange="SelectDate(this.form);return false">
+                    <OPTION value="0"><%{T w='expressset'}%></OPTION>
+                    <OPTION value="1"><%{T w='1year'}%></OPTION>
+                    <OPTION value="2"><%{T w='2years'}%></OPTION>
+                    <OPTION value="3"><%{T w='3years'}%></OPTION>
+                    <OPTION value="-1"><%{T w='nolimit/auto'}%></OPTION>
+                </SELECT>
+            </td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setdomains">
+            <tr>
+                <td><%{T w='newquota'}%>(MB)</td><td><input type="text" name="defaultquota" value="<%{$detail.default_quota / 1024 / 1024}%>"></td>
+            </tr>
+            <tr>
+                <td><%{T w='newlast'}%></td><td><input type="text" name="defaultexpire" value="<%{if $smarty.get.a eq 'add'}%>1y<%{else}%><%{$detail.default_expire}%><%{/if}%>"><br /><%{T w='domainformat'}%></td>
+            </tr>
+            <tr>
+                <td><%{T w='newactivesrv'}%></td>
+                <td><input type="checkbox" name="SERVICES_smtp" <%{if $detail.disablesmtp eq 0}%>checked="checked"<%{/if}%>>smtp recv <input type="checkbox" name="SERVICES_smtpd" <%{if $detail.disablesmtpd eq 0}%>checked="checked"<%{/if}%>>SASL auth <input type="checkbox" name="SERVICES_pop3" <%{if $detail.disablepop3 eq 0}%>checked="checked"<%{/if}%>>pop3</td>
+            </tr>
+        </table>
+    </div>
+    <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setdomains">
+        <tr>
+            <th colspan="2">
+                    <input type="submit" name="save" value="<%{T w='save'}%>">
+            </th>
+        </tr>
+    </table>
+</form> </div>
+</body>
+</html>
+<%{/block}%>

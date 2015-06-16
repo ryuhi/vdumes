@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="mon, 23 jan 1978 12:52:30 gmt">
+<link type="text/css" rel="stylesheet" href="./public/css/<%{$smarty.session.lang}%>/global.css" />
+<script src="./public/js/jquery-1.8.3.js" type="application/javascript"></script>
+<title><%{$smarty.const.SYS_APP_TYPE}%></title>
+</head>
+<body>
+	<p align="center"><img src="./public/images/vdumes.png"></p>
+    <table width="980" border="0" align="center" cellpadding="5" cellspacing="0">
+  <tr align="center" style="background:#6DA6D1; color:#fff; height:30px;">
+    <td width="10%" class="hp"><a href="?c=main&a=show"><%{T w='home'}%></a></td>
+    <%{if $role eq 'admin'}%><td width="10%" <%{if $smarty.get.c eq 'domain'}%>class="cur"<%{/if}%>><a href="?c=domain&a=index"><%{T w='domain'}%></a></td><%{/if}%>
+    <%{if $role neq 'user'}%><td width="10%" <%{if $smarty.get.c eq 'mailbox'}%>class="cur"<%{/if}%>><a href="?c=mailbox&a=index"><%{T w='user'}%></a></td><%{else}%><td width="10%">&nbsp;</td><%{/if}%>
+    <%{if $role neq 'user'}%><td width="10%" <%{if $smarty.get.c eq 'alias'}%>class="cur"<%{/if}%>><a href="?c=alias&a=index"><%{T w='alias'}%></a></td><%{else}%><td width="10%">&nbsp;</td><%{/if}%>
+    <%{if $role eq 'admin'}%><td width="10%" <%{if $smarty.get.c eq 'manager'}%>class="cur"<%{/if}%>><a href="?c=manager&a=index"><%{T w='administrator'}%></a></td><%{/if}%>
+    <td style="text-align:right; padding-right:20px;"><%{if $smarty.cookies.user eq ''}%><a href="?c=main&a=login"><%{T w='login'}%></a><%{else}%><span style="margin:10px 8px;"><a href="?c=main&a=chgpwd"><%{$smarty.cookies.user}%></a></span> <a href="?c=main&a=logout"><%{T w='logout'}%></a><%{/if}%></td>
+    </tr>
+</table>

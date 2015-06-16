@@ -1,0 +1,85 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="body"}%>
+<script type="application/javascript">
+$(document).ready(function(){
+	$("#search").click(function(){ //
+		if($('#name').val() == null || $('#name').val() == "") {
+			var data = {};
+		} else {
+			var data = {'name' : $("#name").val(),'type' : $("#type").val()};
+		}
+        $.post('<%{spUrl c=manager a=index}%>', data, function(backs){
+			$('html').html(backs);
+			$('#name').val(data.name);
+			$('#type').val(data.type);
+        });
+	});
+});
+</script>
+<form action="#" method="post" target="_self" id="mx">
+<table width="980" border="0" align="center" cellpadding="5" cellspacing="0" id="mxlist">
+  <tr>
+	  <td colspan="6" align="right" style="background:transparent;"><a href="?c=manager&a=add"><%{T w='addmanager'}%></a> <%{T w='totalmanager'}%><%{$count}%><%{T w='P'}%></td>
+  </tr>
+  <tr align="center">
+    <th><%{T w='user'}%></th>
+    <th><%{T w='truename'}%></th>
+    <th><%{T w='type'}%></th>
+    <th><%{T w='expiredate'}%></th>
+    <th><%{T w='active'}%></th>
+    <th><%{T w='operate'}%></th>
+  </tr>
+  <%{section name=rsa loop=$rs}%>
+  <tr align="center" style="height:30px;">
+    <td><a href="?c=manager&a=edit&adm=<%{$rs[rsa].username}%>"><%{$rs[rsa].username}%></a></td>
+    <td><%{$rs[rsa].name}%></td>
+    <td><%{if $rs[rsa].type eq 'admin'}%><%{T w='admin'}%><%{elseif $rs[rsa].type eq 'postmaster'}%><%{T w='postmaster'}%><%{/if}%></td>
+    <td><%{$rs[rsa].expiredate}%></td>
+    <td><%{if $rs[rsa].active eq 1}%><%{T w='living'}%><%{else}%><%{T w='death'}%><%{/if}%></td>
+    <td style="text-align:center;"><a href="?c=manager&a=edit&adm=<%{$rs[rsa].username}%>"><img src="./public/images/edit.png"></a> <%{if $rs[rsa].type eq 'postmaster'}%><a class="deladmin" href="?c=manager&a=rm&adm=<%{$rs[rsa].username}%>"><img src="./public/images/del.png" onclick="return confirm('<%{T w='delornot'}%>');"></a><%{/if}%></td>
+  </tr>
+  <%{sectionelse}%>
+  <tr>
+	  <td colspan="6" align="center" style="height:20px;"><%{T w='nodomains'}%></td>
+  </tr>
+  <%{/section}%>
+    <%{if $pager}%>  
+  <tr>
+    <td colspan="6">
+<%{T w='sum'}%><%{T w='domain'}%><%{$pager.total_count}%><%{T w='P'}%>，<%{T w='sum'}%><%{$pager.total_page}%><%{T w='page'}%>（<%{T w='perpage'}%><%{$pager.page_size}%><%{T w='P'}%><%{T w='domain'}%>）：
+<!--在当前页不是第一页的时候，显示前页和上一页-->
+<%{if $pager.current_page != $pager.first_page}%>
+<a href="<%{spUrl c=domain a=index page=$pager.first_page}%>"><%{T w='firstpage'}%></a> | 
+<a href="<%{spUrl c=domain a=index page=$pager.prev_page}%>"><%{T w='prevpage'}%></a> | 
+<%{/if}%>
+<!--开始循环页码，同时如果循环到当前页则不显示链接-->
+<%{foreach from=$pager.all_pages item=thepage}%>
+	<%{if $thepage != $pager.current_page}%>
+		<a href="<%{spUrl c=domain a=index page=$thepage}%>"><%{$thepage}%></a>
+	<%{else}%>
+		<b><%{$thepage}%></b>
+	<%{/if}%>
+<%{/foreach}%>
+<!--在当前页不是最后一页的时候，显示下一页和后页-->
+<%{if $pager.current_page != $pager.last_page}%>
+ | 
+<a href="<%{spUrl c=domain a=index page=$pager.next_page}%>"><%{T w='nextpage'}%></a> | 
+<a href="<%{spUrl c=domain a=index page=$pager.last_page}%>"><%{T w='lastpage'}%></a>
+<%{/if}%>
+    </td>
+  </tr>
+ <%{/if}%>
+   <tr>
+   <td colspan="6">
+   <%{T w='search'}%><input name="name" type="text" id="name"> <select name="type" id="type">
+     <option value="name"><%{T w='truename'}%></option>
+     <option value="username"><%{T w='user'}%></option>
+   </select> <input name="search" type="button" id="search" value="<%{T w='search'}%>">
+   </td>
+  </tr>
+</table>
+</form>
+		</body>
+		</html>
+<%{/block}%>

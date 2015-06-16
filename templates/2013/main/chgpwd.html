@@ -1,0 +1,29 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="body"}%>
+<div style="margin:0 auto; width:980px; height:50px; line-height:50px;"><strong><%{T w='chgpassword'}%></strong></div>
+<form action="?c=main&amp;a=chgpwd" method="post" id="set_passwd">
+<table cellspacing="0" cellpadding="5" border="0" style="border:1px solid #ccc; width:980px;"  id="setpwd">
+      <tr>
+        <td style="width:30%;"><%{T w='oldpwd'}%></td>
+        <td align="left"><label for="password"></label>
+        <input type="password" name="password" id="password" /></td>
+      </tr>
+      <tr>
+        <td><%{T w='newpwd'}%></td>
+        <td align="left"><label for="newpassword"></label>
+        <input type="password" name="newpassword" id="newpassword" /></td>
+      </tr>
+      <tr>
+        <td><%{T w='renewpwd'}%></td>
+        <td align="left"><label for="renewpassword"></label>
+        <input type="password" name="renewpassword" id="renewpassword" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><div style="padding-top: 20px"><input type="submit" name="save" id="save" value="<%{T w='submit'}%>" /></div></td>
+      </tr>
+    </table>
+</form>
+		</body>
+		</html>
+<%{/block}%>

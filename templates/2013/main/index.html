@@ -1,0 +1,73 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="body"}%>
+<table width="980" border="0" align="center" cellpadding="0" cellspacing="0"  id="sysinfo">
+      <tr>
+        <th colspan="2"><%{T w='softinfo'}%></th>
+        <th><%{T w='conflist'}%></th>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td style="width:15%;"><%{T w='softname'}%></td>
+        <td style="word-break:break-word; width:35%;">VDUMES - <br>Virtual Domains Unicode Management for Extmail Solutions</td>
+        <td><%{T w='database'}%><%{T w='type'}%></td>
+        <td><%{$dbtype}%></td>
+      </tr>
+      <tr>
+        <td><%{T w='version'}%></td>
+        <td>1.0</td>
+        <td><%{T w='password'}%><%{T w='type'}%></td>
+        <td><%{$smarty.const.SYS_CRYPT_TYPE}%></td>
+      </tr>
+      <tr>
+        <td><%{T w='licensetype'}%></td>
+        <td>BSD</td>
+        <td><%{T w='currentusr'}%></td>
+        <td><%{$smarty.cookies.user}%></td>
+      </tr>
+      <tr>
+        <td>SITE</td>
+        <td><a href="http://www.vdumes.org" target="_blank">http://www.vdumes.org</a></td>
+        <td><%{T w='user'}%><%{T w='type'}%></td>
+        <td><%{$res.type}%></td>
+      </tr>
+      <tr>
+        <th colspan="2"><%{T w='sysinfo'}%></th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>OS</td>
+        <td><%{$listenv.os}%></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><%{T w='language'}%></td>
+        <td><%{$smarty.cookies._SpLangCookies}%></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><%{T w='core'}%><%{T w='version'}%></td>
+        <td><%{$listenv.version}%></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td><%{T w='host'}%></td>
+        <td><%{$listenv.host}%></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>CPU
+            <%{T w='type'}%></td>
+        <td><%{$listenv.plat}%></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+		</body>
+		</html>
+<%{/block}%>

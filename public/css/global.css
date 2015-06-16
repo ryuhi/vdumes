@@ -1,0 +1,20 @@
+*{margin:0px auto;padding:0px;font-size:12px;}
+input[type=text]{border:1px solid #999;}
+input[type=password]{border:1px solid #999;}
+body *{outline:none;}
+a:visited { color: #036; }
+a,a:visited{text-decoration:none; color:#000;}
+a:hover{text-decoration:underline;}
+a.wa,a.wa:visited{color:#fff;}
+a:hover{text-decoration:underline;}
+img {border:none;}
+
+.setdomains td, .setmx td, #dmlist td, .mxlist td, #setmx td, #setal td, .setadmin td, #setlogin td, #setpwd td {border-bottom:1px solid #ccc; height:25px; line-height:25px; padding-left:30px; text-align:left;}
+#setal th{background:#4166AD; color:#fff; height:30px; line-height:30px; padding-left:20px;}
+.setdomains th, .setmx th, .setadmin th {color:#fff; height:30px; line-height:30px; padding-left:20px; text-align: left;}
+.mxlist th {background:#6DA6D1; color:#fff; height:30px; line-height:30px; padding-left:20px;}
+.cur, .hp {background:#f63f41; color:#fff;}
+.cur a, .hp a{color:#fff;}
+.hp {border-right:1px #fff solid;}
+#sysinfo td, #sysinfo th{border-bottom:1px solid #ccc; height:25px; line-height:25px; padding-left:15px; text-align:left;}
+.notice {margin:4px 3px; color:#f00;}

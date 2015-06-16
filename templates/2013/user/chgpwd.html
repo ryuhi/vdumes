@@ -1,0 +1,31 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="body"}%>
+<div style="margin:0 auto; width:980px; height:50px; line-height:50px;"><strong><%{T w='chgpassword'}%></strong></div>
+<form action="<%{spUrl c=user a=index}%>" method="post" id="set_passwd">
+<table cellspacing="0" cellpadding="5" border="0" style="border:1px solid #ccc; width:980px;"  id="setpwd">
+      <tr>
+        <td style="width:20%;"><%{T w='oldpwd'}%></td>
+        <td align="left"><label for="password"></label>
+        <input name="password" type="password" id="password" size="50" maxlength="255" /><span class="notice"><%{T w='needsstrong'}%></span></td>
+      </tr>
+      <tr>
+        <td><%{T w='newpwd'}%></td>
+        <td align="left"><label for="newpassword"></label>
+        <input name="newpassword" type="password" id="newpassword" size="50" maxlength="255" /></td>
+      </tr>
+      <tr>
+        <td><%{T w='renewpwd'}%></td>
+        <td align="left"><label for="renewpassword"></label>
+        <input name="renewpassword" type="password" id="renewpassword" size="50" maxlength="255" /></td>
+      </tr>
+      <tr>
+        <td colspan="2"><div style="padding-top: 20px"><input type="submit" name="save" id="save" value="<%{T w='submit'}%>" />
+          <input name="user" type="hidden" id="user" value="<%{$smarty.cookies.user}%>" />
+        </div></td>
+      </tr>
+    </table>
+</form>
+		</body>
+		</html>
+<%{/block}%>

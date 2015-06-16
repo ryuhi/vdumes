@@ -1,0 +1,159 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="js"}%>
+<script language="javascript">
+    $(document).ready(function(){
+        var $items = $('#vtab>ul>li');
+        $items.mouseover(function() {
+            $items.removeClass('selected');
+            $(this).addClass('selected');
+            var ind = $items.index($(this));
+            var dm = $('#vtab>ul>li:eq(' + ind + ')').html();
+            $('#add_mb').attr('href', '?c=mailbox&a=add&domain=' + dm);
+            $('#vtab>div').hide().eq(ind).show();
+        }).eq(1).mouseover();
+    });
+</script>
+<script language="javascript">
+    $(document).ready(function(){
+        $('#chkclone').click(function(){ // “检查用户名重复”的按钮被点击
+            // 由于需要JSON数据，所以使用$.getJSON
+            $.getJSON("<%{spUrl c=mailbox a=chkclone}%>", {'username': $('#username').val(),'domain': $("#domain").val()}, function(json){
+                // 这里是返回的数据，json变量就是json格式的数据，可以直接使用
+                $('#clone').html(json.message); // 使用json.message，对应myajax/check中的$result['message']
+                if (json.status == 0) {
+                    $('#save').attr('disabled',true);
+                }
+                if ($('#save').attr('disabled', true)) {
+                    if(json.status == 1) {
+                        $('#save').removeAttr('disabled');
+                    }
+                };
+            });
+        });
+        $('#domain').click(function() {
+            var dm = $('#domain').val();
+            $.getJSON("<%{spUrl c=mailbox a=checksize}%>", {'domain': dm }, function(json){
+                $('#quota').val(json); 
+            });
+        });
+    });
+</script>
+<script language="javascript">
+    function SelectDate(form)
+    {
+        year = form.selectdate.value;
+        if(year == 0){
+            return false;
+        }
+        if(year == -1){
+            form.expire.value = '0000-00-00';
+            return false;
+        }
+        nowdate = form.nowdate.value;
+        form.expire.value =  parseInt(nowdate.substr(0,4))+ parseInt(year) + '-' +
+            nowdate.substr(5,2)+ '-' + nowdate.substr(8,2);
+        return true;
+    }
+</script>
+<%{/block}%>
+<%{block name="css"}%>
+<link type="text/css" rel="stylesheet" href="./public/css/vtab.css" />
+<%{/block}%>
+<%{block name="body"}%>
+<div style="margin:0 auto; width:980px; height:50px; line-height:50px;"><strong><%{T w='addmailbox'}%></strong></div>
+<form action="?c=mailbox&a=insert" method="post" name="set_domain">
+    <div id="vtab">
+        <ul>
+            <li colspan="2" class="formtitle"><%{T w='basicset'}%></li>
+            <li colspan="2" class="formtitle"><%{T w='passset'}%></li>
+            <li colspan="2" class="formtitle"><%{T w='templateset'}%></li>
+        </ul>
+        <div>
+            <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setmx">
+                <tr>
+                    <td width="30%"><%{T w='username'}%></td>
+                    <td><input name="username" type="text" id="username" size="30">
+                        @
+                        <label for="domain"></label>
+                        <select name="domain" id="domain">
+                            <option value=""> </option>
+                            <%{section name=list loop=$dms}%>
+                            <option value="<%{$dms[list].domain}%>" <%{if $dms[list].domain eq $smarty.get.domain}%>selected="selected"<%{/if}%>><%{$dms[list].domain}%></option>
+                            <%{/section}%>
+                        </select><span style="color:#f00;">*</span><input name="chkclone" type="button" id="chkclone" value="<%{T w='chkcloneusr'}%>" /><span id="clone"></span></td>
+                </tr>
+                <td><%{T w='truename'}%></td><td><input name="name" type="text" id="name">
+                    <span style="color:#f00;">*</span></td>
+                </tr>
+                <tr>
+                    <td><%{T w='diskquota'}%>(MB)</td><td><input name="quota" type="text" id="quota" value="<%{$size}%>">
+                        <span style="color:#f00;">*</span></td>
+                </tr>
+                <tr>
+                <input type="hidden" name="nowdate" value="2012-12-30">
+                <td><%{T w='expiredate'}%></td><td><input name="expiredate" type="text" id="expiredate" value="0000-00-00" size=15>
+                    <select name="selectdate" onChange="SelectDate(this.form);return false">
+                        <OPTION value="0"><%{T w='expressset'}%></OPTION>
+                        <OPTION value="1"><%{T w='1year'}%></OPTION>
+                        <OPTION value="2"><%{T w='2years'}%></OPTION>
+                        <OPTION value="3"><%{T w='3years'}%></OPTION>
+                        <OPTION value="-1"><%{T w='nolimit/auto'}%></OPTION>
+                    </SELECT><span style="color:#f00;">*</span>
+                </td>
+                </tr>
+                <tr>
+                    <td><%{T w='active'}%></td><td><input name="active" type="checkbox" value="1" checked="checked"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setmx">
+                <tr>
+                    <td><%{T w='password'}%></td><td><input name="password" type="password" id="password" size="50">
+                        <span style="color:#f00;">*</span></td>
+                </tr>
+                <tr>
+                    <td><%{T w='verfiypass'}%></td><td><input name="verfiypass" type="password" id="verfiypass" size="50">
+                        <span style="color:#f00;">*</span><input name="disablepwdchange" type="hidden" id="disablepwdchange" value="0"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='safeask'}%></td><td><label for="safeask"></label>
+                        <input name="safeask" type="text" id="safeask"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='safeanswer'}%></td><td><label for="safeanswer"></label>
+                        <input name="safeanswer" type="text" id="safeanswer"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setmx">
+                <tr>
+                    <td><%{T w='userid'}%></td>
+                    <td><label for="userid"></label>
+                        <input name="uidnumber" type="text" id="uidnumber" value="<%{$smarty.const.SYS_DEFAULT_UID}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='groupid'}%></td>
+                    <td><label for="groupid"></label>
+                        <input name="gidnumber" type="text" id="gidnumber" value="<%{$smarty.const.SYS_DEFAULT_GID}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='allowservice'}%></td>
+                    <td><input name="SERVICES_smtp" type="checkbox" value="0" checked="checked">smtp recv <input name="SERVICES_smtpd" type="checkbox" value="0" checked="checked">SASL auth <input name="SERVICES_pop3" type="checkbox" value="0" checked="checked">pop3<span style="color:#f00;">*</span></td>
+                </tr>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="5" border="0" class="etb" style="width:980px;" class="setmx">
+            <tr>
+                <th colspan="2">
+                    <input type="submit" name="save" id="save" value="<%{T w='save'}%>">
+                </th>
+            </tr>
+        </table>
+    </div>
+</form>
+</body>
+</html>
+<%{/block}%>

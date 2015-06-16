@@ -1,0 +1,58 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="body"}%>
+<table width="980" border="0" align="center" cellpadding="5" cellspacing="0" id="dmlist">
+    <tr>
+        <td class="botbod" colspan="5" align="right" style="height:30px;"><a href="?c=domain&a=add"><%{T w='adddomain'}%></a> <%{T w='totaldomain'}%><%{$count}%><%{T w='P'}%></td>
+    </tr>
+    <tr align="center" style="height:40px; background:#4166AD;">
+        <td class="botbod" style="color:#fff;"><%{T w='domain'}%></td>
+        <td class="botbod" style="color:#fff;"><%{T w='user'}%></td>
+        <td class="botbod" style="color:#fff;"><%{T w='alias'}%></td>
+        <td class="botbod" style="color:#fff;"><%{T w='quota'}%></td>
+        <td class="botbod" style="color:#fff;"><%{T w='operate'}%></td>
+    </tr>
+    <%{section name=rsa loop=$rs}%>
+    <tr align="center" style="height:40px;">
+        <td class="botbod"><a href="<%{spUrl c=mailbox a=index domain=$rs[rsa].domain}%>" style="text-decoration:underline;"><%{$rs[rsa].domain}%></a></td>
+        <td class="botbod"><%{$rs[rsa].curusers}%>/<%{$rs[rsa].maxusers}%></td>
+        <td class="botbod"><%{$rs[rsa].curalias}%>/<%{$rs[rsa].maxalias}%></td>
+        <td class="botbod"><%{$rs[rsa].maxquota|size}%></td>
+        <td class="botbod"><a href="?c=domain&a=edit&did=<%{$rs[rsa].domain}%>"><img src="./public/images/edit.png"></a> <%{if $crtfirst.domain neq $rs[rsa].domain}%><a href="?c=domain&a=rm&did=<%{$rs[rsa].domain}%>"><img src="./public/images/del.png"  onclick="return confirm('<%{T w='delornot'}%>');"></a><%{/if}%></td>
+    </tr>
+    <%{sectionelse}%>
+    <tr>
+        <td class="botbod" colspan="5" align="center" style="height:20px;"><%{T w='nodomains'}%></td>
+    </tr>
+    <%{/section}%>
+    <%{if $pager}%>
+    <tr>
+        <td class="botbod" colspan="5">
+
+            <%{T w='sum'}%><%{T w='domain'}%><%{$pager.total_count}%><%{T w='P'}%>，<%{T w='sum'}%><%{$pager.total_page}%><%{T w='page'}%>（<%{T w='perpage'}%><%{$pager.page_size}%><%{T w='P'}%><%{T w='domain'}%>）：
+            <!--在当前页不是第一页的时候，显示前页和上一页-->
+            <%{if $pager.current_page != $pager.first_page}%>
+            <a href="<%{spUrl c=domain a=index page=$pager.first_page}%>"><%{T w='firstpage'}%></a> | 
+            <a href="<%{spUrl c=domain a=index page=$pager.prev_page}%>"><%{T w='prevpage'}%></a> | 
+            <%{/if}%>
+            <!--开始循环页码，同时如果循环到当前页则不显示链接-->
+            <%{foreach from=$pager.all_pages item=thepage}%>
+            <%{if $thepage != $pager.current_page}%>
+            <a href="<%{spUrl c=domain a=index page=$thepage}%>"><%{$thepage}%></a>
+            <%{else}%>
+            <b><%{$thepage}%></b>
+            <%{/if}%>
+            <%{/foreach}%>
+            <!--在当前页不是最后一页的时候，显示下一页和后页-->
+            <%{if $pager.current_page != $pager.last_page}%>
+            | 
+            <a href="<%{spUrl c=domain a=index page=$pager.next_page}%>"><%{T w='nextpage'}%></a> | 
+            <a href="<%{spUrl c=domain a=index page=$pager.last_page}%>"><%{T w='lastpage'}%></a>
+            <%{/if}%>
+        </td>
+    </tr>
+    <%{/if}%>
+</table>
+		</body>
+		</html>
+<%{/block}%>

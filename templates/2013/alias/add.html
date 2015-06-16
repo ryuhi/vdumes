@@ -1,0 +1,56 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="js"}%>
+<script language="javascript">
+    $(document).ready(function(){
+        $('#chkclone').click(function(){ // “检查用户名重复”的按钮被点击
+            // 由于需要JSON数据，所以使用$.getJSON
+            $.getJSON("<%{spUrl c=alias a=chkclone}%>", {'username': $('#username').val(),'domain': $("#domain").val()}, function(json){
+                // 这里是返回的数据，json变量就是json格式的数据，可以直接使用
+                $('#clone').html(json.message); // 使用json.message，对应myajax/check中的$result['message']
+                if (json.status == 0) {
+                    $('#save').attr('disabled',true);
+                }
+                if ($('#save').attr('disabled', true)) {
+                    if(json.status == 1) {
+                        $('#save').removeAttr('disabled');
+                    }
+                };
+            });
+        });
+    });
+</script>
+<%{/block}%>
+<%{block name="body"}%>
+<div style="margin:0 auto; width:980px; height:50px; line-height:50px;"><strong><%{T w='addalias'}%></strong></div>
+<form action="?c=alias&amp;a=insert" method="post" name="setalias" id="setalias">
+    <table cellspacing="0" cellpadding="5" border="0" style="border:1px solid #ccc; width:980px;" id="setal">
+        <tr>
+            <td width="30%"><%{T w='username'}%></td>
+            <td><input name="username" type="text" id="username">
+                @
+                <label for="domain"></label>
+                <select name="domain" id="domain">
+                    <%{section name=list loop=$dms}%>
+                    <option value="<%{$dms[list].domain}%>"><%{$dms[list].domain}%></option>
+                    <%{/section}%>
+                </select><span style="color:#f00;">*</span><input name="chkclone" type="button" id="chkclone" value="<%{T w='chkcloneusr'}%>" /><span id="clone"></span></td>
+        </tr>
+        <td><%{T w='directurl'}%></td><td><textarea name="goto" rows="8" id="goto"></textarea>	  
+            <span style="color:#f00;">*</span></td>
+        </tr>
+        <tr>
+            <td><%{T w='active'}%></td><td><input name="active" type="checkbox" id="active" value="1" checked="checked"></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div style="padding-top: 20px">
+                    <input type="submit" name="save" id="save" value="<%{T w='save'}%>">
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+		</body>
+		</html>
+<%{/block}%>

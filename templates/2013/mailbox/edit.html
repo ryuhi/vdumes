@@ -1,0 +1,127 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="js"}%>
+<script language="javascript">
+    $(document).ready(function(){
+        var $items = $('#vtab>ul>li');
+        $items.mouseover(function() {
+            $items.removeClass('selected');
+            $(this).addClass('selected');
+            var ind = $items.index($(this));
+            var dm = $('#vtab>ul>li:eq(' + ind + ')').html();
+            $('#add_mb').attr('href', '?c=mailbox&a=add&domain=' + dm);
+            $('#vtab>div').hide().eq(ind).show();
+        }).eq(1).mouseover();
+    });
+</script>
+<script language="javascript">
+    function SelectDate(form)
+    {
+        year = form.selectdate.value;
+        if(year == 0){
+            return false;
+        }
+        if(year == -1){
+            form.expire.value = '0000-00-00';
+            return false;
+        }
+        nowdate = form.nowdate.value;
+        form.expire.value =  parseInt(nowdate.substr(0,4))+ parseInt(year) + '-' +
+            nowdate.substr(5,2)+ '-' + nowdate.substr(8,2);
+        return true;
+    }
+</script>
+<%{/block}%>
+<%{block name="css"}%>
+<link type="text/css" rel="stylesheet" href="./public/css/vtab.css" />
+<%{/block}%>
+<%{block name="body"}%>
+<div style="margin:0 auto; width:980px; height:50px; line-height:50px;"><strong><%{T w='editmailbox'}%></strong></div>
+<form action="?c=mailbox&a=update" method="post" name="set_domain">
+    <div id="vtab">
+        <ul>
+            <li colspan="2" class="formtitle"><%{T w='basicset'}%></li>
+            <li colspan="2" class="formtitle"><%{T w='passset'}%></li>
+            <li colspan="2" class="formtitle"><%{T w='templateset'}%></li>
+        </ul>
+        <div>
+            <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setmx">
+                <tr>
+                    <td width="30%"><%{T w='username'}%></td>
+                    <td><input name="username" type="text" id="username" value="<%{$detail.uid}%>" size="30">
+                        @<%{$detail.domain}%>
+                        <input name="dm" type="hidden" id="dm" value="<%{$smarty.get.mid}%>" /></td>
+                </tr>
+                <td><%{T w='truename'}%></td><td><input name="name" type="text" id="name" value="<%{$detail.name}%>">
+                    <span style="color:#f00;">*</span></td>
+                </tr>
+                <tr>
+                    <td><%{T w='diskquota'}%>(MB)</td>
+                    <td><input name="quota" type="text" id="quota" value="<%{$detail.quota / 1024 / 1024}%>"></td>
+                </tr>
+                <tr>
+                <input type="hidden" name="nowdate" value="<%{$smarty.now|date:"Y-m-d"}%>">
+                       <td><%{T w='expiredate'}%></td><td><input name="expiredate" type="text" id="expiredate" value="<%{$detail.expiredate}%>" size=15>
+                    <select name="selectdate" onChange="SelectDate(this.form);return false">
+                        <OPTION value="0"><%{T w='expressset'}%></OPTION>
+                        <OPTION value="1"><%{T w='1year'}%></OPTION>
+                        <OPTION value="2"><%{T w='2years'}%></OPTION>
+                        <OPTION value="3"><%{T w='3years'}%></OPTION>
+                        <OPTION value="-1"><%{T w='nolimit/auto'}%></OPTION>
+                    </SELECT>
+                </td>
+                </tr>
+                <tr>
+                    <td><%{T w='active'}%></td><td><input name="active" type="checkbox" value="1" checked="checked"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setmx">
+                <tr>
+                    <td><%{T w='password'}%></td><td><input type="password" name="password"> <span style="color:#f00;"><%{T w='nochgpwd'}%></span></td>
+                </tr>
+                <tr>
+                    <td><%{T w='verfiypass'}%></td><td><input name="verfiypass" type="password" id="verfiypass">
+                        <input name="disablepwdchange" type="hidden" id="disablepwdchange" value="0"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='safeask'}%></td><td><label for="safeask"></label>
+                        <input name="safeask" type="text" id="safeask" value="<%{$detail.question}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='safeanswer'}%></td><td><label for="safeanswer"></label>
+                        <input name="safeanswer" type="text" id="safeanswer" value="<%{$detail.answer}%>"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setmx">
+                <tr>
+                    <td><%{T w='userid'}%></td>
+                    <td><label for="userid"></label>
+                        <input name="uidnumber" type="text" id="uidnumber" value="<%{$smarty.const.SYS_DEFAULT_UID}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='groupid'}%></td>
+                    <td><label for="groupid"></label>
+                        <input name="gidnumber" type="text" id="gidnumber" value="<%{$smarty.const.SYS_DEFAULT_GID}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='allowservice'}%></td>
+                    <td><input name="SERVICES_smtp" type="checkbox" value="0" checked="checked">smtp recv <input name="SERVICES_smtpd" type="checkbox" value="0" checked="checked">SASL auth <input name="SERVICES_pop3" type="checkbox" value="0" checked="checked">pop3</td>
+                </tr>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="5" border="0" style="width:980px;" class="setmx">
+            <tr>
+                <th colspan="2">
+                    <input type="submit" name="save" value="<%{T w='save'}%>">
+                </th>
+            </tr>
+        </table>
+</form>
+</div>
+</body>
+</html>
+<%{/block}%>

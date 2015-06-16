@@ -1,0 +1,206 @@
+<%{extends file='public/layout.html'}%>
+<%{block name="title" prepend}%><%{$title}%> -<%{/block}%>
+<%{block name="js"}%>
+<script language="javascript">
+    $(document).ready(function(){
+        var $items = $('#vtab>ul>li');
+        $items.mouseover(function() {
+            $items.removeClass('selected');
+            $(this).addClass('selected');
+            var ind = $items.index($(this));
+            var dm = $('#vtab>ul>li:eq(' + ind + ')').html();
+            $('#add_mb').attr('href', '?c=mailbox&a=add&domain=' + dm);
+            $('#vtab>div').hide().eq(ind).show();
+        }).eq(1).mouseover();
+    });
+    $(document).ready(function(){
+        $('#chkclone').click(function(){ // “检查用户名重复”的按钮被点击
+            // 由于需要JSON数据，所以使用$.getJSON
+            $.getJSON("<%{spUrl c=domain a=chkclone}%>", {'domain': $("#domain").val()}, function(json){
+                // 这里是返回的数据，json变量就是json格式的数据，可以直接使用
+                $('#clone').html(json.message); // 使用json.message，对应myajax/check中的$result['message']
+                if (json.status == 0) {
+                    $('#save').attr('disabled',true);
+                }
+                if ($('#save').attr('disabled', true)) {
+                    if(json.status == 1) {
+                        $('#save').removeAttr('disabled');
+                    }
+                };
+            });
+        });
+    });
+</script>
+<script language="javascript">
+    function SelectDate(form)
+    {
+        year = form.selectdate.value;
+        if(year == 0){
+            return false;
+        }
+        if(year == -1){
+            form.expire.value = '0000-00-00';
+            return false;
+        }
+        nowdate = form.nowdate.value;
+        form.expire.value =  parseInt(nowdate.substr(0,4))+ parseInt(year) + '-' +
+            nowdate.substr(5,2)+ '-' + nowdate.substr(8,2);
+        return true;
+    }
+</script>
+<%{/block}%>
+<%{block name="css"}%>
+<style>
+    #vtab {
+        margin: 0 auto;
+        width: 980px;
+        height: 100%;
+    }
+
+    #vtab > ul > li {
+        width: auto;
+        height: 24px;
+        line-height:24px;
+        padding:5px;
+        background-color:#6DA6D1 !important;
+        list-style-type: none;
+        display: block;
+        text-align: center;
+        position: relative;
+        border-right: none;
+        float:left;
+        clear:right;
+        color:#fff;
+    }
+
+    #vtab > ul > div {
+        width: auto;
+        height: 24px;
+        line-height:24px;
+        margin:4px 3px;
+        padding:5px;
+        list-style-type: none;
+        display: block;
+        text-align: center;
+        position: relative;
+        border-right: none;
+        float:left;
+        clear:right;
+    }
+
+    #vtab > ul > li.selected {
+        opacity: 1;
+        padding:5px;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+        filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+        border:1px solid #f63f41;
+        border-left:none;
+        background-color:#f63f41 !important;
+        position: relative;
+        color:#fff;
+    }
+    #vtab > ul {
+        width: 980px;
+        text-align: left;
+        display: block;
+        margin: auto 0;
+        padding: 0;
+        padding-left:1px;
+        position: relative;
+        background:#fafafa;
+        top: 10px;
+        height:40px;
+        clear: both;
+    }
+    #vtab > div {
+        background-color: #fafafa;
+        min-height: 300px;
+        max-height: 1000px;
+        position: relative;
+        -moz-border-radius: 20px;
+        width:980px;
+    }
+</style>
+<%{/block}%>
+<%{block name="body"}%>
+<div style="margin:0 auto; width:980px; height:50px; line-height:50px;"><strong><%{T w='adddomain'}%></strong></div>
+<form action="?c=domain&a=insert" method="post" name="set_domain">
+    <div id="vtab">
+        <ul>
+            <li colspan="2" class="formtitle"><%{T w='basicset'}%></li>
+            <li colspan="2"><%{T w='templateset'}%></li>
+        </ul>
+        <div>
+            <table border="0" align="center" cellpadding="5" cellspacing="0" class="setdomains" style="width:980px;">
+
+                <tr class="botbod">
+                    <td width="30%" class="botbod"><%{T w='domain'}%></td>
+                    <td class="botbod"><input name="domain" type="text" id="domain" size="30">
+                        <input name="chkclone" type="button" id="chkclone" value="<%{T w='chkclonedm'}%>" /><span id="clone"></span></td>
+                </tr>
+                <tr>
+                    <td><%{T w='description'}%></td><td><input type="text" name="description" size="50"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='maxusers'}%></td><td><input type="text" name="maxusers" value="<%{$smarty.const.SYS_DEFAULT_MAXUSERS}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='maxaliases'}%></td><td><input type="text" name="maxalias" value="<%{$smarty.const.SYS_DEFAULT_MAXALIAS}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='maxquota'}%>(MB)</td><td><input type="text" name="maxquota" value="<%{$smarty.const.SYS_DEFAULT_MAXQUOTA}%>"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='transport'}%></td><td><input type="text" name="transport"></td>
+                </tr>
+                <tr>
+                    <td><%{T w='allowfreeregiser'}%></td><td><input name="can_signup" type="checkbox" id="can_signup" value="1" ></td>
+                </tr>
+                <tr>
+                    <td><%{T w='active'}%></td><td><input name="active" type="checkbox" value="1" checked="checked"></td>
+                </tr>
+                <tr>
+                <input type="hidden" name="nowdate" value="<%{$smarty.now|date:"Y-m-d"}%>">
+                       <td><%{T w='expiredate'}%></td><td><input name="expiredate" type="text" id="expiredate" value="0000-00-00" size=15>
+                    <select name="selectdate" onChange="SelectDate(this.form);return false">
+                        <OPTION value="0"><%{T w='expressset'}%></OPTION>
+                        <OPTION value="1"><%{T w='1year'}%></OPTION>
+                        <OPTION value="2"><%{T w='2years'}%></OPTION>
+                        <OPTION value="3"><%{T w='3years'}%></OPTION>
+                        <OPTION value="-1"><%{T w='nolimit/auto'}%></OPTION>
+                    </SELECT>
+                </td>
+                </tr>
+          </table>
+        </div>
+        <div>
+            <table border="0" align="center" cellpadding="5" cellspacing="0" class="setdomains" style="width:980px;">
+                <tr>
+                    <td><%{T w='newquota'}%>(MB)</td>
+                    <td><input name="default_quota" type="text" id="default_quota" value="<%{$smarty.const.SYS_USER_DEFAULT_QUOTA}%>" /></td>
+                </tr>
+                <tr>
+                    <td><%{T w='newlast'}%></td><td><input name="default_expire" type="text" id="default_expire" value="<%{$smarty.const.SYS_USER_DEFAULT_EXPIRE}%>">
+                        <br /><%{T w='domainformat'}%></td>
+                </tr>
+                <tr>
+                    <td><%{T w='newactivesrv'}%></td>
+                    <td><input name="SERVICES_smtp" type="checkbox" value="0" checked="checked">
+                        smtp recv <input name="SERVICES_smtpd" type="checkbox" value="0" checked="checked">
+                        SASL auth <input name="SERVICES_pop3" type="checkbox" value="0" checked="checked">
+                        pop3</td>
+                </tr>
+            </table>
+                    </div>
+           <table border="0" align="center" cellpadding="5" cellspacing="0" class="setdomains" style="width:980px;"> 
+                <tr>
+                    <th colspan="2">
+                        <div style="padding-top: 20px">
+                            <input name="save" type="submit" id="save" value="<%{T w='save'}%>">
+                        </div></th>
+                </tr>
+          </table>
+</form>
+</body>
+</html>
+<%{/block}%>
